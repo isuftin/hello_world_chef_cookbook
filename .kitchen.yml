@@ -1,6 +1,8 @@
 ---
 driver:
   name: vagrant
+  network:
+    - ["forwarded_port", {guest: 80, host: 8888, auto_correct: true}]
 
 provisioner:
   name: chef_zero
@@ -18,8 +20,16 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[hello_world::default]
+      - recipe[iptables]
+      - recipe[hello_world::dependencies]
+      - recipe[hello_world::iptables]
+      - recipe[hello_world::install_website]
     verifier:
       inspec_tests:
         - test/smoke/default
-    attributes:
+    attributes: {
+      "hello_world" : {
+        "content" : {
+          }
+        }
+    }
